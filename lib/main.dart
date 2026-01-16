@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_evntly/firebase_options.dart';
+import 'package:todo_evntly/screens/intro_screen.dart';
+
+import 'auth/login_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +20,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: IntroScreen.routeName,
+        routes: {
+        IntroScreen.routeName:(context)=> const IntroScreen(),
+          LoginScreen.routeName:(context)=> const LoginScreen(),
+        },
     );
   }
 }
