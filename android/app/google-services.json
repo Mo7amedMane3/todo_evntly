@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495931163340",
+    "project_id": "evently-mohamed-mane3",
+    "storage_bucket": "evently-mohamed-mane3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495931163340:android:c1cdc64d2be08c92e5b869",
+        "android_client_info": {
+          "package_name": "com.example.todo_evntly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0rGIcaHbsgiFv6G49KYQ02oG2SyQ9BBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
