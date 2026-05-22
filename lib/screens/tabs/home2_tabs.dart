@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_evntly/provider/home_page_provider.dart';
+import 'package:todo_evntly/screens/event_details/event_details_screen.dart';
 
 import '../../core/firebase_functions.dart';
 import '../../models/task_model.dart';
@@ -26,8 +27,6 @@ class HomeTabs2 extends StatelessWidget {
         // var provider=Provider.of<HomePageProvider>(context);
         final provider = context.watch<HomePageProvider>();
         return Container(
-
-
             color: Theme.of(context).primaryColor,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -94,66 +93,86 @@ class HomeTabs2 extends StatelessWidget {
                         return SizedBox(height: 12);
                       },
                       itemBuilder: (context,index){
-                        return Container(
-                          color: Color(0xFFF0F0F0),
-                          height: 193,
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(18),
-                                child: Image.asset("assets/images/${provider.tasks[index].category}.png",
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      formatter.format(
-                                        DateTime.fromMicrosecondsSinceEpoch(
-                                            provider.tasks[index].date),
-                                      ),
-
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                          color: Theme.of(context).colorScheme.primary),),
-                                  ),
-                                  Container(
-                                      padding: EdgeInsets.all(8),
+                        return InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              EventDetailsScreen.routeName,
+                              arguments: provider.tasks[index],
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+                            ),
+                            height: 193,
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.asset("assets/images/${provider.tasks[index].category}.png",
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                                       margin: EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Color(0xFFF0F0F0),
-                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.white.withOpacity(0.7),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                              provider.tasks[index].title,
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color(0xFF1C1C1C))),
-                                          InkWell(
-                                            onTap: (){
-                                              var task=provider.tasks[index];
-                                              task.isFavorite=!task.isFavorite;
-                                              provider.updateTask(task);
-                                            },
-                                            child: Icon(
-                                                provider.tasks[index].isFavorite?
-                                                Icons.favorite:
-                                                Icons.favorite_border),),
-                                        ],
-                                      )
-                                  )
-                                ],
-                              )
+                                      child: Text(
+                                        formatter.format(
+                                          DateTime.fromMicrosecondsSinceEpoch(
+                                              provider.tasks[index].date),
+                                        ),
 
-                            ],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.primary),),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.all(8),
+                                        margin: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.9),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                                provider.tasks[index].title,
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xFF1C1C1C))),
+                                            InkWell(
+                                              onTap: (){
+                                                var task=provider.tasks[index];
+                                                task.isFavorite=!task.isFavorite;
+                                                provider.updateTask(task);
+                                              },
+                                              child: Icon(
+                                                  provider.tasks[index].isFavorite?
+                                                  Icons.favorite:
+                                                  Icons.favorite_border,
+                                                  color: Theme.of(context).colorScheme.primary,
+                                              ),),
+                                          ],
+                                        )
+                                    )
+                                  ],
+                                )
+
+                              ],
+                            ),
                           ),
                         );
                       },

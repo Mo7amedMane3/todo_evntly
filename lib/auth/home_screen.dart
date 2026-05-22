@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                 color: Color(0xFF686868),
               ),),
             subtitle: Text(
-              authprovider.userModel!.name,
+              authprovider.userModel?.name??"User",
               textAlign: TextAlign.start,
               style: GoogleFonts.poppins(
                 fontSize: 20,

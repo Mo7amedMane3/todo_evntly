@@ -9,6 +9,8 @@ import 'package:todo_evntly/firebase_options.dart';
 import 'package:todo_evntly/provider/auth_provider.dart';
 import 'package:todo_evntly/provider/theme_provider.dart';
 import 'package:todo_evntly/screens/add_event/add_event_screen.dart';
+import 'package:todo_evntly/screens/edit_event_screen.dart';
+import 'package:todo_evntly/screens/event_details/event_details_screen.dart';
 import 'package:todo_evntly/screens/intro_screen.dart';
 import 'package:todo_evntly/auth/login_screen.dart';
 import 'package:todo_evntly/screens/tabs/home2_tabs.dart';
@@ -61,7 +63,7 @@ class MyApp extends StatelessWidget {
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       initialRoute: authprovider.fireBaseUser!=null
-          ? HomeScreen.routeName
+          ? IntroScreen.routeName
           :LoginScreen.routeName,
         routes: {
         IntroScreen.routeName:(context)=> const IntroScreen(),
@@ -74,6 +76,8 @@ class MyApp extends StatelessWidget {
           ProfileTabs.routeName:(context)=> const ProfileTabs(),
           HomeTabs2.routeName:(context)=>  HomeTabs2(),
           AddEventScreen.routeName:(context)=>  AddEventScreen(),
+          EventDetailsScreen.routeName:(context)=> const EventDetailsScreen(),
+          EditEventScreen.routeName:(context)=> EditEventScreen(),
 
 
 

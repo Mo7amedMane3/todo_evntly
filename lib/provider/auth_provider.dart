@@ -22,3 +22,12 @@ AuthProvider(){
   }
 
 }
+class AuthProvider2 extends ChangeNotifier {
+
+  User? userModel;
+
+  void updateUser(User? user) {
+    userModel = user;
+    notifyListeners();
+  }
+}

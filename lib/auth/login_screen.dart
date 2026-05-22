@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -305,9 +306,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   ),
                   onPressed: () {
-                    // TODO: Implement Google Sign-In
+                    FireBaseFunctions.loginWithGoogle(context);
                   },
-                  icon: Image.asset("assets/images/google.png", height: 24), // TODO: Add google_logo.png to assets/images
+                  icon: Image.asset("assets/images/google.png", height: 24),
                   label:  Text("Sign in with Google",
                     style: GoogleFonts.poppins(
                       fontSize: 18,

@@ -2,8 +2,15 @@ import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart' show Provider;
 import 'package:todo_evntly/models/task_model.dart';
 import 'package:todo_evntly/models/user_model.dart';
+
+import '../auth/home_screen.dart' show HomeScreen;
+import '../provider/auth_provider.dart';
 
 class FireBaseFunctions {
   static CollectionReference<UserModel> getUserCollection() {
@@ -16,19 +23,19 @@ class FireBaseFunctions {
         }
     );
   }
- static Future<void> resetPassword(String email) async {
+
+  static Future<void> resetPassword(String email) async {
     {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     }
   }
 
-  static Future<UserModel?> readUser()async{
+  static Future<UserModel?> readUser() async {
     var collection = getUserCollection();
-   DocumentSnapshot<UserModel> data = await collection.doc(FirebaseAuth.instance.currentUser!.uid).get();
-return data.data();
+    DocumentSnapshot<UserModel> data = await collection.doc(
+        FirebaseAuth.instance.currentUser!.uid).get();
+    return data.data();
   }
-
-
 
   static CollectionReference<TaskModel> getTasksCollection() {
     return FirebaseFirestore.instance.collection("tasks")
@@ -40,14 +47,12 @@ return data.data();
         }
     );
   }
-  static saveUsers(UserModel user){
+
+  static saveUsers(UserModel user) {
     var collection = getUserCollection();
     var dokRef = collection.doc(user.id);
     return dokRef.set(user);
   }
-
-
-
 
   static Future<void> createTask(TaskModel task) {
     var collection = getTasksCollection();
@@ -69,61 +74,52 @@ return data.data();
   }
 
   static Stream<QuerySnapshot<TaskModel>> getFavouriteTasks() {
-    var data = getTasksCollection().where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+    var data = getTasksCollection().where(
+        "userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
 
         .where("isFavorite", isEqualTo: true).snapshots();
     return data;
-
   }
 
+  static Stream<QuerySnapshot<TaskModel>> getTasksStream({String? category}) {
+    var collection = getTasksCollection();
 
+    if (category != null) {
+      return collection.where(
+          "userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where("category", isEqualTo: category)
+          .snapshots();
+    } else {
+      return collection.where(
+          "userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .snapshots();
+    }
+  }
 
-
-
-
- static Stream<QuerySnapshot<TaskModel>> getTasksStream({String? category}) {
-   var collection = getTasksCollection();
-
-   if (category != null) {
-     return collection.where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-         .where("category", isEqualTo: category)
-         .snapshots();
-   } else {
-     return collection.where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-         .snapshots();
-   }
- }
-
-
-
- static Future<void> signOut()async {
+  static Future<void> signOut() async {
     FirebaseAuth.instance.signOut();
   }
 
-
- static Future<QuerySnapshot<TaskModel>>getTasks({String ? category}) async{
-   var collection = getTasksCollection();
-   QuerySnapshot<TaskModel> data;
-   if(category!=null){
+  static Future<QuerySnapshot<TaskModel>> getTasks({String ? category}) async {
+    var collection = getTasksCollection();
+    QuerySnapshot<TaskModel> data;
+    if (category != null) {
       data = await collection.where("category",
-         isEqualTo: category).get();
-   }else{
-     data = await collection.get();
-   }
-   return data;
- }
+          isEqualTo: category).get();
+    } else {
+      data = await collection.get();
+    }
+    return data;
+  }
 
-
-
-  static Future<void>login(
-      String emailAddress,
+  static Future<void> login(String emailAddress,
       String password,
 
-   {required Function onSuccess,required Function onError})async{
+      {required Function onSuccess, required Function onError}) async {
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailAddress,
-          password: password,
+        email: emailAddress,
+        password: password,
 
       );
       onSuccess();
@@ -139,43 +135,81 @@ return data.data();
         onError('Wrong password provided for that user.');
       } else if (e.code == 'wrong-password') {
         onError('Wrong password provided for that user.');
-      }else{
+      } else {
         onError(e.code);
       }
     }
   }
 
 
- static Future<void> CreateUser (String email,
-     String password,
-     String name,
-     String nid,
-     { required Function onSuccess,required Function onError}) async{
+  static Future<void> CreateUser(String email,
+      String password,
+      String name,
+      String nid,
+      { required Function onSuccess, required Function onError}) async {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
         email: email,
         password: password,
-        );
-     await saveUsers(
-        UserModel(name: name,
+      );
+      await saveUsers(
+          UserModel(name: name,
               email: email,
-              nid: nid,id: credential.user!.uid)
+              nid: nid, id: credential.user!.uid)
       );
       await credential.user!.sendEmailVerification();
       onSuccess();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         onError('The password provided is too weak.');
-
       } else if
-            (e.code == 'email-already-in-use') {
-          onError('The account already exists for that email.');
-      }else{
+      (e.code == 'email-already-in-use') {
+        onError('The account already exists for that email.');
+      } else {
         onError(e.code);
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+  static final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  static Future<UserCredential?> signInWithGoogle() async {
+try{
+  await _googleSignIn.initialize(
+      serverClientId: "495931163340-cgdrelp55jhvnco9clkjpfv1831ujnba.apps.googleusercontent.com");
+  final GoogleSignInAccount result = await _googleSignIn.authenticate();
+  final googleAuth=result.authentication;
+  final credential = GoogleAuthProvider.credential(
+    idToken: googleAuth.idToken,
+  );
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
+catch(e){
+  print("Google Login Failed");
+  return null;
+
+}
+  }
+  static Future<void>loginWithGoogle(BuildContext context) async{
+    try{
+      UserCredential? credential = await signInWithGoogle();
+      if (credential != null) {
+      Provider.of<AuthProvider2>(context, listen: false)
+          .updateUser(credential.user);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Login Successfull"),
+        ),
+      );
+}
+      Navigator.pushReplacementNamed(context, "/home");}
+    catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Login Failed"),
+        ),
+      );
     }
   }
 }
